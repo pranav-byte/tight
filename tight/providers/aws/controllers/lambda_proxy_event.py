@@ -91,6 +91,11 @@ class LambdaProxyController():
         method = event['httpMethod']
         method_handler = self.methods[':'.join([controller_name, method])]
         method_handler_args = self.prepare_args(*args, **kwargs)
+        try:
+            method_response = method_handler(*args, **method_handler_args)
+        except Exception as e:
+            # Really should check error type
+            method_response = e.message
         method_response = method_handler(*args, **method_handler_args)
         prepared_response = self.prepare_response(**method_response)
         return prepared_response
