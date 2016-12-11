@@ -26,6 +26,7 @@ setup(
     license='MIT',
     package_data={'tight': ['*.json']},
     include_package_data=True,
+    package_dir={'tight': 'tight'},
     zip_safe=False,
     keywords='tight',
     entry_points={},
