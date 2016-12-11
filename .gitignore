@@ -1,0 +1,7 @@
+sample/
+.cache
+venv
+docs/build/
+.idea
+*.py?
+__pycache__/
