@@ -12,15 +12,7 @@ def run():
         traceback.print_exc()
 
 def create(current_module):
-    controllers = []
-    for dirName, subdirList, fileList in os.walk('app/functions'):
-        if ('handler.py' in fileList):
-            controller_module_path = (dirName + '/handler').replace('/', '.')
-            controller_name = controller_module_path.split('.')[-2]
-            callback = {}
-            callback[controller_name] = controller_module_path
-            controllers.append(callback)
-
+    controllers = collect_controllers()
     for item in controllers:
         name, controller_module_path = item.popitem()
         def function(*args, **kwargs):
@@ -32,3 +24,15 @@ def create(current_module):
         bound_function = partial(function, *(controller_module_path, name))
         function.__name__ = name + '_module'
         setattr(current_module, name, bound_function)
+
+def collect_controllers():
+    app_root = os.environ.get('TIGHT.APP_ROOT', 'app/functions')
+    controllers = []
+    for dirName, subdirList, fileList in os.walk(app_root):
+        if ('handler.py' in fileList):
+            controller_module_path = (dirName + '/handler').replace('/', '.')
+            controller_name = controller_module_path.split('.')[-2]
+            callback = {}
+            callback[controller_name] = controller_module_path
+            controllers.append(callback)
+    return controllers
