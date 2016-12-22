@@ -79,6 +79,17 @@ def create(current_module):
         setattr(current_module, name, bound_function)
 
 def collect_controllers():
+    """" Inspect the application directory structure and discover controller modules.
+
+    Given the following directory structure:
+
+    app/
+        functions/
+            controller_a/
+
+    :rtype: list
+    :return: A list of controller name to module path mappings.
+    """
     app_root = os.environ.get('TIGHT.APP_ROOT', 'app/functions')
     controllers = []
     for dirName, subdirList, fileList in os.walk(app_root):
