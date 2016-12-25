@@ -33,31 +33,42 @@ def spy_on_session(file, session, placebo_path):
 def record(file, dynamo_db_session, namespace):
     this = sys.modules[__name__]
     placebo_path = placebos_path(file, namespace, mode='record')
+    os.environ['RECORD'] = 'True'
     if not hasattr(this, 'pill') or not hasattr(this, 'boto3_pill'):
         boto3_session = boto3_client.session()
         boto3_pill = spy_on_session(file, boto3_session, placebo_path)
         boto3_pill.record()
         pill = spy_on_session(file, dynamo_db_session, placebo_path)
-        os.environ['RECORD'] = 'True'
         pill.record()
         setattr(this, 'pill', pill)
         setattr(this, 'boto3_pill', boto3_pill)
+    else:
+        pill = getattr(this, 'pill')
+        pill._data_path = placebo_path
+        boto3_pill = getattr(this, 'boto3_pill')
+        boto3_pill._data_path = placebo_path
+        pill.record()
+        boto3_pill.record()
 
 def playback(file, dynamo_db_session, namespace):
     this = sys.modules[__name__]
     placebo_path = placebos_path(file, namespace, mode='playback')
+    os.environ['PLAYBACK'] = 'True'
     if not hasattr(this, 'pill') or not hasattr(this, 'boto3_pill'):
         boto3_session = boto3_client.session()
         boto3_pill = spy_on_session(file, boto3_session, placebo_path)
         boto3_pill.playback()
         pill = spy_on_session(file, dynamo_db_session, placebo_path)
-        os.environ['PLAYBACK'] = 'True'
         pill.playback()
         setattr(this, 'pill', pill)
         setattr(this, 'boto3_pill', boto3_pill)
     else:
-        getattr(this, 'pill')._data_path = placebos_path(file)
-        getattr(this, 'boto3_pill')._data_path = placebos_path(file)
+        pill = getattr(this, 'pill')
+        pill._data_path = placebo_path
+        boto3_pill = getattr(this, 'boto3_pill')
+        boto3_pill._data_path = placebo_path
+        pill.playback()
+        boto3_pill.playback()
 
 def expected_response_body(dir, expectation_file, actual_response):
     file_path = '/'.join([dir, expectation_file])
