@@ -1,10 +1,21 @@
 import sys, importlib, json, traceback
+from functools import partial
+
 methods = [
     'get', 'post', 'patch', 'put', 'delete', 'options'
 ]
+
 class LambdaProxyController():
     def __init__(self):
         self.methods = {}
+        for method in methods:
+            def function(method, func, *args, **kwargs):
+                self = kwargs.pop('self')
+                self.attach_handler(func)
+                controller_name = func.func_globals['__package__'].split('.')[-1]
+                self.methods['{}:{}'.format(controller_name, method.upper())] = func
+            setattr(self, method, partial(function, method, self=self))
+
 
     def attach_handler(self, func):
         function_package = func.func_globals['__name__']
@@ -14,35 +25,6 @@ class LambdaProxyController():
         except Exception as e:
             setattr(function_module, 'handler', self.run)
 
-    def get(self, func, *args, **kwargs):
-        self.attach_handler(func)
-        controller_name = func.func_globals['__package__'].split('.')[-1]
-        self.methods['{}:GET'.format(controller_name)] = func
-
-    def post(self, func, *args, **kwargs):
-        self.attach_handler(func)
-        controller_name = func.func_globals['__package__'].split('.')[-1]
-        self.methods['{}:POST'.format(controller_name)] = func
-
-    def patch(self, func, *args, **kwargs):
-        self.attach_handler(func)
-        controller_name = func.func_globals['__package__'].split('.')[-1]
-        self.methods['{}:PATCH'.format(controller_name)] = func
-
-    def put(self, func, *args, **kwargs):
-        self.attach_handler(func)
-        controller_name = func.func_globals['__package__'].split('.')[-1]
-        self.methods['{}:PUT'.format(controller_name)] = func
-
-    def delete(self, func, *args, **kwargs):
-        self.attach_handler(func)
-        controller_name = func.func_globals['__package__'].split('.')[-1]
-        self.methods['{}:DELETE'.format(controller_name)] = func
-
-    def options(self, func, *args, **kwargs):
-        self.attach_handler(func)
-        controller_name = func.func_globals['__package__'].split('.')[-1]
-        self.methods['{}:OPTIONS'.format(controller_name)] = func
 
     def prepare_args(self, *args, **kwargs):
         event = args[1]
@@ -96,7 +78,6 @@ class LambdaProxyController():
         except Exception as e:
             # Really should check error type
             method_response = e.message
-        method_response = method_handler(*args, **method_handler_args)
         prepared_response = self.prepare_response(**method_response)
         return prepared_response
 
