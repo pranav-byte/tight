@@ -78,7 +78,10 @@ class LambdaProxyController():
         except Exception as e:
             # Really should check error type
             method_response = e.message
-        prepared_response = self.prepare_response(**method_response)
+        if type(method_response) is dict:
+            prepared_response = self.prepare_response(**method_response)
+        else:
+            raise Exception(method_response)
         return prepared_response
 
 LambdaProxySingleton = LambdaProxyController()
