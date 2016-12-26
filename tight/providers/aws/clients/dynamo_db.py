@@ -19,7 +19,7 @@ def connect(*args, **kwargs):
                            secret_key='anything',
                            is_secure=False,
                            session=session)
-        elif os.environ['CI'] == 'True':
+        elif ('CI' in os.environ and os.environ['CI'] == 'True'):
             engine.connect_to_region(os.environ['AWS_REGION'], session=session)
         else:
             engine.connect_to_region(os.environ['AWS_REGION'])
