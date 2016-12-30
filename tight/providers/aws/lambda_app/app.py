@@ -3,6 +3,16 @@ from functools import partial
 from tight.core.logger import info
 
 def run():
+    """ Call create on ``sys.modules['app_index']`` and catch any errors.
+
+    Typical usage would be to import this module and call ``run`` immediately:
+
+
+    .. sourcecode:: python
+
+        from app.vendored.tight.providers.aws.lambda_app import app
+        app.run()
+    """
     try:
         info(message='CREATING APP')
         create(sys.modules['app_index'])
@@ -85,7 +95,7 @@ def create(current_module):
 def collect_controllers():
     """" Inspect the application directory structure and discover controller modules.
 
-    Given the following directory structure:
+    Given the following directory structure, located at ``TIGHT.APP_ROOT``:
 
     .. sourcecode:: bash
 
@@ -99,7 +109,7 @@ def collect_controllers():
         |-----not_a_controller/
         |-------some_module.py
 
-    Descend into ``TIGHT.APP_ROOT/app/functions`` and collect the names of directories that contain a file named ``handler.py``. The directory structure above would produce areturn value of:
+    Descend into ``TIGHT.APP_ROOT/app/functions`` and collect the names of directories that contain a file named ``handler.py``. The directory structure above would produce the return value:
 
 
     .. sourcecode:: python
@@ -108,7 +118,7 @@ def collect_controllers():
 
 
     :rtype: list
-    :return: A list of controller name to module path mappings.
+    :return: A list of application controller names.
     """
     app_root = os.environ.get('TIGHT.APP_ROOT', 'app/functions')
     controllers = []
