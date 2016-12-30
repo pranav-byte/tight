@@ -1,0 +1,10 @@
+{# page.html #}
+{# Import the theme's layout. #}
+{% extends "!page.html" %}
+{% block body %}
+    <div style="text-align: center; border-top: solid 1px; border-bottom: solid 1px; margin-bottom: 1em">
+        <img src="{{ pathto('_static/logo.png', 1) }}" align="center" width="75%" />
+    </div>
+    {{ super() }}
+{% endblock %}
+

@@ -1,7 +1,7 @@
 sample/
 .cache
 venv
-docs/build/
+docs/_build/
 .idea
 *.py?
 __pycache__/

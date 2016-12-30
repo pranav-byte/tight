@@ -87,10 +87,18 @@ class LambdaProxyController():
 LambdaProxySingleton = LambdaProxyController()
 
 current_module = sys.modules[__name__]
-''' Expose all method handlers'''
-for method in methods:
-    handler = getattr(LambdaProxySingleton, method)
-    setattr(current_module, method, handler)
+
+def expose():
+    for method in methods:
+        handler = getattr(LambdaProxySingleton, method)
+        setattr(current_module, method, handler)
+expose()
 
 def handler(*args, **kwargs):
+    """ Proxy to LambdaProxySingleton::run
+
+    :param args:
+    :param kwargs:
+    :return: LambdaProxyController
+    """
     return LambdaProxySingleton.run(*args, **kwargs)
