@@ -12,6 +12,11 @@ tight
 .. image:: https://codecov.io/gh/michaelorionmcmanus/tight/branch/master/graph/badge.svg
   :target: https://codecov.io/gh/michaelorionmcmanus/tight
 
+.. image:: https://codeclimate.com/github/michaelorionmcmanus/tight/badges/gpa.svg
+   :target: https://codeclimate.com/github/michaelorionmcmanus/tight
+   :alt: Code Climate
+
+
 ----
 
 Tight is an application building toolset created and optimized for serverless runtimes. With ``tight-cli`` and ``tight`` you can quickly scaffold serverless applications that are conventional, testable-by-default and free of boilerplate.
