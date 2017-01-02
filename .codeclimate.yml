@@ -18,6 +18,6 @@ ratings:
   paths:
   - "**.py"
 exclude_paths:
-- ./tests/
-- ./docs/
-- ./fixtures/
+- tests/
+- docs/
+- fixtures/
