@@ -30,45 +30,38 @@ def spy_on_session(file, session, placebo_path):
     pill = placebo.attach(session, data_path=placebo_path)
     return pill
 
-def record(file, dynamo_db_session, namespace):
+def prepare_pills(mode, placebo_path, dynamo_db_session):
     this = sys.modules[__name__]
+    if not hasattr(this, 'pill') or not hasattr(this, 'boto3_pill'):
+        boto3_session = boto3_client.session()
+        boto3_pill = spy_on_session(file, boto3_session, placebo_path)
+        boto3_pill_method = getattr(boto3_pill, mode)
+        boto3_pill_method()
+        pill = spy_on_session(file, dynamo_db_session, placebo_path)
+        pill_method = getattr(pill, mode)
+        pill_method()
+        setattr(this, 'pill', pill)
+        setattr(this, 'boto3_pill', boto3_pill)
+    else:
+        pill = getattr(this, 'pill')
+        pill._data_path = placebo_path
+        boto3_pill = getattr(this, 'boto3_pill')
+        boto3_pill._data_path = placebo_path
+        pill_method = getattr(pill, mode)
+        pill_method()
+        boto3_pill_method = getattr(boto3_pill, mode)
+        boto3_pill_method()
+
+def record(file, dynamo_db_session, namespace):
     placebo_path = placebos_path(file, namespace, mode='record')
     os.environ['RECORD'] = 'True'
-    if not hasattr(this, 'pill') or not hasattr(this, 'boto3_pill'):
-        boto3_session = boto3_client.session()
-        boto3_pill = spy_on_session(file, boto3_session, placebo_path)
-        boto3_pill.record()
-        pill = spy_on_session(file, dynamo_db_session, placebo_path)
-        pill.record()
-        setattr(this, 'pill', pill)
-        setattr(this, 'boto3_pill', boto3_pill)
-    else:
-        pill = getattr(this, 'pill')
-        pill._data_path = placebo_path
-        boto3_pill = getattr(this, 'boto3_pill')
-        boto3_pill._data_path = placebo_path
-        pill.record()
-        boto3_pill.record()
+    prepare_pills('record', placebo_path, dynamo_db_session)
+
 
 def playback(file, dynamo_db_session, namespace):
-    this = sys.modules[__name__]
     placebo_path = placebos_path(file, namespace, mode='playback')
     os.environ['PLAYBACK'] = 'True'
-    if not hasattr(this, 'pill') or not hasattr(this, 'boto3_pill'):
-        boto3_session = boto3_client.session()
-        boto3_pill = spy_on_session(file, boto3_session, placebo_path)
-        boto3_pill.playback()
-        pill = spy_on_session(file, dynamo_db_session, placebo_path)
-        pill.playback()
-        setattr(this, 'pill', pill)
-        setattr(this, 'boto3_pill', boto3_pill)
-    else:
-        pill = getattr(this, 'pill')
-        pill._data_path = placebo_path
-        boto3_pill = getattr(this, 'boto3_pill')
-        boto3_pill._data_path = placebo_path
-        pill.playback()
-        boto3_pill.playback()
+    prepare_pills('playback', placebo_path, dynamo_db_session)
 
 def expected_response_body(dir, expectation_file, actual_response):
     file_path = '/'.join([dir, expectation_file])
