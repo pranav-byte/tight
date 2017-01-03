@@ -20,6 +20,7 @@ def run():
         info(message='UNABLE TO RUN')
         info(message=e)
         traceback.print_exc()
+        raise Exception('could not run')
 
 
 def create(current_module):

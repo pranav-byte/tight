@@ -52,16 +52,16 @@ def prepare_pills(mode, placebo_path, dynamo_db_session):
         boto3_pill_method = getattr(boto3_pill, mode)
         boto3_pill_method()
 
-def record(file, dynamo_db_session, namespace):
-    placebo_path = placebos_path(file, namespace, mode='record')
-    os.environ['RECORD'] = 'True'
-    prepare_pills('record', placebo_path, dynamo_db_session)
+def tape_deck(mode):
+    placebo_path = placebos_path(file, namespace, mode=mode)
+    os.environ[mode.upper()] = 'True'
+    prepare_pills(mode, placebo_path, dynamo_db_session)
 
+def record(file, dynamo_db_session, namespace):
+    tape_deck('record')
 
 def playback(file, dynamo_db_session, namespace):
-    placebo_path = placebos_path(file, namespace, mode='playback')
-    os.environ['PLAYBACK'] = 'True'
-    prepare_pills('playback', placebo_path, dynamo_db_session)
+    tape_deck('playback')
 
 def expected_response_body(dir, expectation_file, actual_response):
     file_path = '/'.join([dir, expectation_file])
