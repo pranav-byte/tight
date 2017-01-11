@@ -1,11 +1,26 @@
 import sys, importlib, json, traceback
 from functools import partial
+from tight.core.logger import info
 
 methods = [
     'get', 'post', 'patch', 'put', 'delete', 'options'
 ]
 
+def merge_dicts(*dict_args):
+    """
+    Given any number of dicts, shallow copy and merge into a new dict,
+    precedence goes to key value pairs in latter dicts.
+    """
+    result = {}
+    for dictionary in dict_args:
+        result.update(dictionary)
+    return result
+
 class LambdaProxyController():
+    HEADERS = {
+        'Access-Control-Allow-Origin': '*'
+    }
+
     def __init__(self):
         self.methods = {}
         for method in methods:
@@ -33,7 +48,7 @@ class LambdaProxyController():
             try:
                 event['body'] = json.loads(event['body'])
             except Exception as e:
-                self.log('Could not json.loads ' + str(event['body']))
+                info(message='Could not json.loads ' + str(event['body']))
                 event['body'] = {}
         try:
             principal_id = event['requestContext']['authorizer']['claims']['sub']
@@ -60,9 +75,10 @@ class LambdaProxyController():
         # Response header needs to specify `Access-Control-Allow-Origin` in order
         # for CORS to function properly.
         if ('headers' not in kwargs):
-            kwargs['headers'] = {
-                'Access-Control-Allow-Origin': '*'
-            }
+            kwargs['headers'] = {}
+
+        headers = merge_dicts(kwargs['headers'], self.HEADERS)
+        kwargs['headers'] = headers
         # Ship it!
         return kwargs
 
@@ -93,6 +109,9 @@ def expose():
         handler = getattr(LambdaProxySingleton, method)
         setattr(current_module, method, handler)
 expose()
+
+def set_default_headers(headers):
+    LambdaProxySingleton.HEADERS = headers
 
 def handler(*args, **kwargs):
     """ Proxy to LambdaProxySingleton::run
