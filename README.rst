@@ -6,11 +6,11 @@ tight
     :target: http://tight-cli.readthedocs.io/en/latest/?badge=latest
     :alt: Documentation Status
 
-.. image:: https://travis-ci.org/lululemon/tight.svg?branch=master
-    :target: https://travis-ci.org/lululemon/tight
+.. image:: https://travis-ci.org/Lululemon/tight.svg?branch=master
+    :target: https://travis-ci.org/Lululemon/tight
 
-.. image:: https://codecov.io/gh/lululemon/tight/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/lululemon/tight
+.. image:: https://codecov.io/gh/Lululemon/tight/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/Lululemon/tight
 
 .. image:: https://codeclimate.com/github/Lululemon/tight/badges/gpa.svg
    :target: https://codeclimate.com/github/Lululemon/tight
