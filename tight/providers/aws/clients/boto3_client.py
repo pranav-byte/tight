@@ -12,8 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import boto3, sys
+import boto3
+import sys
 boto3_session = None
+
+
 def session():
     current_module = sys.modules[__name__]
     boto3_session = getattr(current_module, 'boto3_session')

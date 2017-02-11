@@ -22,25 +22,30 @@ def test_prepare_args_no_boom():
     prepared_args = instance.prepare_args('', {}, {})
     assert prepared_args == {'event': {}, 'context': {}, 'principal_id': None}
 
+
 def test_prepare_args_json_loads_body():
     instance = LambdaProxyController()
     prepared_args = instance.prepare_args('', {'body': '{"name":"banana"}'}, {})
     assert prepared_args == {'event': {'body': {'name': 'banana'}}, 'context': {}, 'principal_id': None}
 
+
 def test_prepare_args_json_loads_body_unparsable():
     instance = LambdaProxyController()
-    prepared_args = instance.prepare_args('', {'body':'I am just a string'}, {})
+    prepared_args = instance.prepare_args('', {'body': 'I am just a string'}, {})
     assert prepared_args == {'event': {'body': {}}, 'context': {}, 'principal_id': None}
+
 
 def test_prepare_response_passthrough():
     instance = LambdaProxyController()
     prepared_response = instance.prepare_response(passthrough='Banana')
     assert prepared_response == 'Banana'
 
+
 def test_prepare_response_default():
     instance = LambdaProxyController()
     prepared_response = instance.prepare_response()
     assert prepared_response == {'body': {}, 'headers': {'Access-Control-Allow-Origin': '*'}, 'statusCode': 200}
+
 
 def test_set_headers():
     set_default_headers({})

@@ -13,10 +13,12 @@
 # limitations under the License.
 
 from flywheel import Model, Field, Engine
-import os, sys
+import os
+import sys
 current_module = sys.modules[__name__]
 session = None
 engine = None
+
 
 def connect(*args, **kwargs):
     engine = getattr(current_module, 'engine')

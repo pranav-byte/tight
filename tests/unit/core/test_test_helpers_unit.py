@@ -16,8 +16,10 @@ import os
 import tight.core.test_helpers as test_helpers
 from tight.providers.aws.clients import boto3_client
 
+
 def test_no_boom():
     assert True, 'Module can be imported.'
+
 
 def test_prepare_pills_record():
     test_helpers.prepare_pills('record', 'some/path', boto3_client.session())
@@ -30,6 +32,7 @@ def test_prepare_pills_record():
     assert boto3_pill == boto3_pill_cached, 'boto3 pill is cached'
     assert dynamo_pill == dynamo_pill_cached, 'dynamo pill is cached'
 
+
 def test_prepare_pills_playback():
     test_helpers.prepare_pills('playback', 'some/path', boto3_client.session())
     boto3_pill = getattr(test_helpers, 'boto3_pill')
@@ -41,9 +44,11 @@ def test_prepare_pills_playback():
     assert boto3_pill == boto3_pill_cached, 'boto3 pill is cached'
     assert dynamo_pill == dynamo_pill_cached, 'dynamo pill is cached'
 
+
 def test_placebos_path_playback():
     result = test_helpers.placebos_path('/some/absolute/path.py', 'my_namespace')
     assert result == '/some/absolute/placebos/my_namespace'
+
 
 def test_placebos_path_record(tmpdir):
     test_file = '{}/some_test.py'.format(tmpdir)
@@ -55,6 +60,7 @@ def test_placebos_path_record(tmpdir):
 
     assert result == '{}/placebos/some_test'.format(tmpdir)
     assert os.path.isdir(result), 'Namespaced placebos directory exists'
+
 
 def test_placebos_path_record_placebos_exist(tmpdir):
     test_file = '{}/some_test.py'.format(tmpdir)
@@ -72,4 +78,3 @@ def test_placebos_path_record_placebos_exist(tmpdir):
     assert os.listdir(result)[0] == 'i_should_not_exist.txt'
     result2 = test_helpers.placebos_path(test_file, 'some_test', mode='record')
     assert len(os.listdir(result2)) == 0
-

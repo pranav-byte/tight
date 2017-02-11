@@ -14,6 +14,7 @@
 
 from tight.providers.aws.clients import boto3_client
 
+
 def test_no_boom():
     assert True, 'Client can be imported.'
 

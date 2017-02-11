@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os, importlib, traceback, sys
+import os
+import importlib
+import traceback
+import sys
 from functools import partial
 from tight.core.logger import info
+
 
 def run():
     """ Call create on ``sys.modules['app_index']`` and catch any errors.
@@ -98,6 +102,7 @@ def create(current_module):
     controllers = collect_controllers()
     for item in controllers:
         name, controller_module_path = item.popitem()
+
         def function(*args, **kwargs):
             controller_module_path = args[0]
             func_args = args[1:4]
@@ -106,6 +111,7 @@ def create(current_module):
         bound_function = partial(function, *(controller_module_path, name))
         function.__name__ = name + '_module'
         setattr(current_module, name, bound_function)
+
 
 def collect_controllers():
     """" Inspect the application directory structure and discover controller modules.

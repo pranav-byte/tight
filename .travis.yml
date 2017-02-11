@@ -16,10 +16,14 @@ sudo: false
 matrix:
   include:
   - python: "2.7"
+beforeinstall:
+    - apt-get update
+    - apt-get install colordiff
 install:
   - pip install -e .
   - pip install -r requirements-test.txt
 script:
+  - ./run_autopep8.sh check
   - py.test tests --cov=tight tests/
 after_success:
   - bash <(curl -s https://codecov.io/bash)

@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, importlib, json, traceback
+import sys
+import importlib
+import json
+import traceback
 from functools import partial
 from tight.core.logger import info
 
 methods = [
     'get', 'post', 'patch', 'put', 'delete', 'options'
 ]
+
 
 def merge_dicts(*dict_args):
     """
@@ -29,6 +33,7 @@ def merge_dicts(*dict_args):
     for dictionary in dict_args:
         result.update(dictionary)
     return result
+
 
 class LambdaProxyController():
     HEADERS = {
@@ -45,7 +50,6 @@ class LambdaProxyController():
                 self.methods['{}:{}'.format(controller_name, method.upper())] = func
             setattr(self, method, partial(function, method, self=self))
 
-
     def attach_handler(self, func):
         function_package = func.func_globals['__name__']
         function_module = importlib.import_module(function_package)
@@ -53,7 +57,6 @@ class LambdaProxyController():
             getattr(function_module, 'handler')
         except Exception as e:
             setattr(function_module, 'handler', self.run)
-
 
     def prepare_args(self, *args, **kwargs):
         event = args[1]
@@ -118,14 +121,17 @@ LambdaProxySingleton = LambdaProxyController()
 
 current_module = sys.modules[__name__]
 
+
 def expose():
     for method in methods:
         handler = getattr(LambdaProxySingleton, method)
         setattr(current_module, method, handler)
 expose()
 
+
 def set_default_headers(headers):
     LambdaProxySingleton.HEADERS = headers
+
 
 def handler(*args, **kwargs):
     """ Proxy to LambdaProxySingleton::run
