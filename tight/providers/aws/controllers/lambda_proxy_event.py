@@ -16,8 +16,9 @@ import sys
 import importlib
 import json
 import traceback
+import re
 from functools import partial
-from tight.core.logger import info
+from tight.core.logger import info, error
 
 methods = [
     'get', 'post', 'patch', 'put', 'delete', 'options'
@@ -109,13 +110,21 @@ class LambdaProxyController():
         try:
             method_response = method_handler(*args, **method_handler_args)
         except Exception as e:
-            # Really should check error type
-            method_response = e.message
+            method_response = e
         if type(method_response) is dict:
             prepared_response = self.prepare_response(**method_response)
         else:
-            raise Exception(method_response)
+            trace_lines = traceback.format_exc().splitlines()
+            # Format lines so that they show up nicely in cloudwatch logs.
+            trace_lines = [re.sub(r'^(\s+)', (len(re.match(r'^(\s+)', line).groups(0)[0]) * '_') + ' ', line) if re.match(r'^\s+', line) is not None else line for line in trace_lines]
+            trace = "\n".join(trace_lines)
+            error(message='\n\n' + trace)
+            prepared_response = {
+                'statusCode': 500,
+                'body': 'There was an error.'
+            }
         return prepared_response
+
 
 LambdaProxySingleton = LambdaProxyController()
 
@@ -126,6 +135,8 @@ def expose():
     for method in methods:
         handler = getattr(LambdaProxySingleton, method)
         setattr(current_module, method, handler)
+
+
 expose()
 
 

@@ -29,3 +29,8 @@ def info(*args, **kwargs):
     """
     message = kwargs.pop('message')
     logger.info(message)
+
+
+def error(*args, **kwargs):
+    message = kwargs.pop('message')
+    logger.error(message)
