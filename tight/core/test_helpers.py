@@ -12,21 +12,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest, os, sys, importlib, yaml, json, shutil
+import pytest
+import os
+import sys
+import importlib
+import yaml
+import json
+import shutil
 from botocore import session as boto_session
 from tight.providers.aws.clients import boto3_client
 from tight.providers.aws.clients import dynamo_db
 import placebo
 
+
 @pytest.fixture
 def app():
     return importlib.import_module('app_index')
+
 
 @pytest.fixture
 def event():
     with open('tests/fixtures/lambda_proxy_event.yml') as data_file:
         event = yaml.load(data_file)
     return event
+
 
 def placebos_path(file, namespace, mode='playback'):
     test_path = '/'.join(file.split('/')[0:-1])
@@ -40,9 +49,11 @@ def placebos_path(file, namespace, mode='playback'):
             os.mkdir(namespaced_path)
     return namespaced_path
 
+
 def spy_on_session(file, session, placebo_path):
     pill = placebo.attach(session, data_path=placebo_path)
     return pill
+
 
 def prepare_pills(mode, placebo_path, dynamo_db_session):
     this = sys.modules[__name__]
@@ -66,16 +77,20 @@ def prepare_pills(mode, placebo_path, dynamo_db_session):
         boto3_pill_method = getattr(boto3_pill, mode)
         boto3_pill_method()
 
+
 def tape_deck(mode, file, dynamo_db_session, namespace):
     placebo_path = placebos_path(file, namespace, mode=mode)
     os.environ[mode.upper()] = 'True'
     prepare_pills(mode, placebo_path, dynamo_db_session)
 
+
 def record(file, dynamo_db_session, namespace):
     tape_deck('record', file, dynamo_db_session, namespace)
 
+
 def playback(file, dynamo_db_session, namespace):
     tape_deck('playback', file, dynamo_db_session, namespace)
+
 
 def expected_response_body(dir, expectation_file, actual_response):
     file_path = '/'.join([dir, expectation_file])
@@ -89,7 +104,7 @@ def expected_response_body(dir, expectation_file, actual_response):
 
 @pytest.fixture
 def dynamo_db_session():
-    session =  getattr(dynamo_db, 'session') or None
+    session = getattr(dynamo_db, 'session') or None
     if session:
         return session
     else:

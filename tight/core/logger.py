@@ -18,6 +18,7 @@ logging.basicConfig()
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 def info(*args, **kwargs):
     """
     Log a message using the system logger.
@@ -28,3 +29,8 @@ def info(*args, **kwargs):
     """
     message = kwargs.pop('message')
     logger.info(message)
+
+
+def error(*args, **kwargs):
+    message = kwargs.pop('message')
+    logger.error(message)

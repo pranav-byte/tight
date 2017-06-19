@@ -12,13 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys, importlib, json, traceback
+import sys
+import importlib
+import json
+import traceback
+import re
 from functools import partial
-from tight.core.logger import info
+from tight.core.logger import info, error
 
 methods = [
     'get', 'post', 'patch', 'put', 'delete', 'options'
 ]
+
 
 def merge_dicts(*dict_args):
     """
@@ -29,6 +34,7 @@ def merge_dicts(*dict_args):
     for dictionary in dict_args:
         result.update(dictionary)
     return result
+
 
 class LambdaProxyController():
     HEADERS = {
@@ -45,7 +51,6 @@ class LambdaProxyController():
                 self.methods['{}:{}'.format(controller_name, method.upper())] = func
             setattr(self, method, partial(function, method, self=self))
 
-
     def attach_handler(self, func):
         function_package = func.func_globals['__name__']
         function_module = importlib.import_module(function_package)
@@ -53,7 +58,6 @@ class LambdaProxyController():
             getattr(function_module, 'handler')
         except Exception as e:
             setattr(function_module, 'handler', self.run)
-
 
     def prepare_args(self, *args, **kwargs):
         event = args[1]
@@ -106,26 +110,39 @@ class LambdaProxyController():
         try:
             method_response = method_handler(*args, **method_handler_args)
         except Exception as e:
-            # Really should check error type
-            method_response = e.message
+            method_response = e
         if type(method_response) is dict:
             prepared_response = self.prepare_response(**method_response)
         else:
-            raise Exception(method_response)
+            trace_lines = traceback.format_exc().splitlines()
+            # Format lines so that they show up nicely in cloudwatch logs.
+            trace_lines = [re.sub(r'^(\s+)', (len(re.match(r'^(\s+)', line).groups(0)[0]) * '_') + ' ', line) if re.match(r'^\s+', line) is not None else line for line in trace_lines]
+            trace = "\n".join(trace_lines)
+            error(message='\n\n' + trace)
+            prepared_response = {
+                'statusCode': 500,
+                'body': 'There was an error.'
+            }
         return prepared_response
+
 
 LambdaProxySingleton = LambdaProxyController()
 
 current_module = sys.modules[__name__]
 
+
 def expose():
     for method in methods:
         handler = getattr(LambdaProxySingleton, method)
         setattr(current_module, method, handler)
+
+
 expose()
+
 
 def set_default_headers(headers):
     LambdaProxySingleton.HEADERS = headers
+
 
 def handler(*args, **kwargs):
     """ Proxy to LambdaProxySingleton::run
