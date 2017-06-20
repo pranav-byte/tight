@@ -23,8 +23,7 @@ with open('README.rst') as readme_file:
 install_requires = [
     'flywheel>=0.5.1',
     'PyYAML',
-    'boto3',
-    'placebo'
+    'boto3'
 ]
 
 

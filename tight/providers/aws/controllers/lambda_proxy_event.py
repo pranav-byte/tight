@@ -47,13 +47,13 @@ class LambdaProxyController():
             def function(method, func, *args, **kwargs):
                 self = kwargs.pop('self')
                 self.attach_handler(func)
-                controller_name = func.func_globals['__package__'].split('.')[-1]
+                controller_name = getattr(func, '__module__').split('.')[-2]
                 self.methods['{}:{}'.format(controller_name, method.upper())] = func
             setattr(self, method, partial(function, method, self=self))
 
     def attach_handler(self, func):
-        function_package = func.func_globals['__name__']
-        function_module = importlib.import_module(function_package)
+        module_path = getattr(func, '__module__')
+        function_module = importlib.import_module(module_path)
         try:
             getattr(function_module, 'handler')
         except Exception as e:
@@ -111,10 +111,10 @@ class LambdaProxyController():
             method_response = method_handler(*args, **method_handler_args)
         except Exception as e:
             method_response = e
+            trace_lines = traceback.format_exc().splitlines()
         if type(method_response) is dict:
             prepared_response = self.prepare_response(**method_response)
         else:
-            trace_lines = traceback.format_exc().splitlines()
             # Format lines so that they show up nicely in cloudwatch logs.
             trace_lines = [re.sub(r'^(\s+)', (len(re.match(r'^(\s+)', line).groups(0)[0]) * '_') + ' ', line) if re.match(r'^\s+', line) is not None else line for line in trace_lines]
             trace = "\n".join(trace_lines)
