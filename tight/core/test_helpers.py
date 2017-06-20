@@ -35,12 +35,9 @@ def event():
 
 def expected_response_body(dir, expectation_file, actual_response):
     file_path = '/'.join([dir, expectation_file])
-    if 'PLAYBACK' in os.environ and os.environ['PLAYBACK'] == 'True':
-        return json.loads(yaml.load(open(file_path))['body'])
-    if 'RECORD' in os.environ and os.environ['RECORD'] == 'True':
-        stream = file(file_path, 'w')
-        yaml.safe_dump(actual_response, stream)
-        return json.loads(actual_response['body'])
+    stream = open(file_path, 'w')
+    yaml.safe_dump(actual_response, stream)
+    return json.loads(actual_response['body'])
 
 
 @pytest.fixture
