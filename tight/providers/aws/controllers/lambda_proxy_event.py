@@ -36,6 +36,12 @@ def merge_dicts(*dict_args):
     return result
 
 
+class HttpExitException(Exception):
+    def __init__(self, response_code, response):
+        response['statusCode'] = response_code
+        self.response = response
+
+
 class LambdaProxyController():
     HEADERS = {
         'Access-Control-Allow-Origin': '*'
@@ -100,6 +106,9 @@ class LambdaProxyController():
         # Ship it!
         return kwargs
 
+    def exit_with_response(self, response_code, response):
+        raise HttpExitException(response_code, response)
+
     def run(self, *args, **kwargs):
         controller_name = args[0]
         event = args[1]
@@ -109,6 +118,8 @@ class LambdaProxyController():
         method_handler_args = self.prepare_args(*args, **kwargs)
         try:
             method_response = method_handler(*args, **method_handler_args)
+        except HttpExitException as http_exit_instance:
+            method_response = http_exit_instance.response
         except Exception as e:
             method_response = e
             trace_lines = traceback.format_exc().splitlines()
@@ -132,6 +143,8 @@ current_module = sys.modules[__name__]
 
 
 def expose():
+    exit_with_response = getattr(LambdaProxySingleton, 'exit_with_response')
+    setattr(current_module, 'exit_with_response', exit_with_response)
     for method in methods:
         handler = getattr(LambdaProxySingleton, method)
         setattr(current_module, method, handler)
