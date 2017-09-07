@@ -130,10 +130,8 @@ class LambdaProxyController():
             trace_lines = [re.sub(r'^(\s+)', (len(re.match(r'^(\s+)', line).groups(0)[0]) * '_') + ' ', line) if re.match(r'^\s+', line) is not None else line for line in trace_lines]
             trace = "\n".join(trace_lines)
             error(message='\n\n' + trace)
-            prepared_response = {
-                'statusCode': 500,
-                'body': 'There was an error.'
-            }
+            raise Exception('There was an error.')
+
         return prepared_response
 
 

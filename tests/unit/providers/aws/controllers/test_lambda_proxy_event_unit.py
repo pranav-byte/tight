@@ -85,6 +85,8 @@ Exception\:\ I\ am\ an\ error\."""
         match = re.search(traceback_assertion_pattern, kwargs['message'])
         assert match is not None, 'Error is logged with formatted stacktrace.'
     monkeypatch.setattr(tight.providers.aws.controllers.lambda_proxy_event, 'error', error_spy)
-    response = instance.run('test_controller', {'httpMethod': 'GET'}, {})
-    assert response['statusCode'] == 500
-    assert response['body'] == 'There was an error.'
+
+    with pytest.raises(Exception) as ex:
+        instance.run('test_controller', {'httpMethod': 'GET'}, {})
+
+    assert str(ex.value) == 'There was an error.'
