@@ -34,3 +34,8 @@ def info(*args, **kwargs):
 def error(*args, **kwargs):
     message = kwargs.pop('message')
     logger.error(message)
+
+
+def warn(*args, **kwargs):
+    message = kwargs.pop('message')
+    logger.warning(message)
