@@ -122,14 +122,12 @@ class LambdaProxyController():
             method_response = http_exit_instance.response
         except Exception as e:
             method_response = e
-            trace_lines = traceback.format_exc().splitlines()
+            trace_lines = traceback.format_exc()
         if type(method_response) is dict:
             prepared_response = self.prepare_response(**method_response)
         else:
-            # Format lines so that they show up nicely in cloudwatch logs.
-            trace_lines = [re.sub(r'^(\s+)', (len(re.match(r'^(\s+)', line).groups(0)[0]) * '_') + ' ', line) if re.match(r'^\s+', line) is not None else line for line in trace_lines]
-            trace = "\n".join(trace_lines)
-            error(message='\n\n' + trace)
+            trace_lines = trace_lines.replace('\n', '\\n')
+            error(message=trace_lines)
             raise Exception('There was an error.')
 
         return prepared_response

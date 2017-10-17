@@ -65,14 +65,11 @@ def test_proxy_controller_run_error_handling(monkeypatch):
         consider: Did the `lambda_proxy_event.py` module get moved? Did line numbers change enough that
         pattern to match them is no longer valid?
     """
-    escaped_text = r"""\
-\
-Traceback\ \(most\ recent\ call\ last\)\:\
-\_\_\ File\ \".*\/tight\/tight\/providers\/aws\/controllers\/lambda\_proxy\_event\.py\"\,\ line\ \d+,\ in\ run\
-\_\_\_\_\ method\_response\ \=\ method\_handler\(\*args\,\ \*\*method\_handler\_args\)\
-\_\_\ File\ \".*\/tight\/tests\/unit\/providers\/aws\/controllers\/test\_lambda\_proxy\_event\_unit\.py\"\,\ line\ \d+,\ in\ controller\_stub\
-\_\_\_\_\ raise\ Exception\(\'I\ am\ an\ error\.\'\)\
-Exception\:\ I\ am\ an\ error\."""
+    escaped_text = r"Traceback\ \(most\ recent\ call\ last\)\:\\n"
+    r"  File\ \"\.*\/tight\/tight\/providers\/aws\/controllers\/lambda_proxy_event\.py\"\,\ line\ \d+,\ in\ run\\n"
+    r"    method_response\ \=\ method_handler\(\*args,\ \*\*method_handler_args\)\\n"
+    r"  File \".*\/tight\/tests\/unit\/providers\/aws\/controllers\/test_lambda_proxy_event_unit\.py\"\,\ line\ 80\,\ in\ controller_stub\\n"
+    r"    raise\ Exception\(\'I\ am\ an\ error\.\')\nException\:\ I\ am\ an\ error\.\\n"
 
     traceback_assertion_pattern = re.compile(escaped_text)
     instance = LambdaProxyController()
