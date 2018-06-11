@@ -73,8 +73,9 @@ class LambdaProxyController():
             try:
                 event['body'] = json.loads(event['body'])
             except Exception as e:
-                info(message=f"Could not json.loads {event['body']}")
+                info(message=f"Could not parse json.loads {event['body']}")
                 # The BBR Proxy's iOS client sends urlencoded form bodies as well.
+                info(message=f"content-type is {event['content-type']}")
                 if 'content-type' in event and 'x-www-form-urlencoded' in event['content-type'].downcase:
                     info(message=f"Trying parse_qs")
                     event['body'] = parse_qs(event['body'])
