@@ -18,6 +18,7 @@ import json
 import traceback
 import re
 from functools import partial
+from urllib.parse import parse_qs
 from tight.core.logger import info, error
 
 methods = [
@@ -68,12 +69,17 @@ class LambdaProxyController():
     def prepare_args(self, *args, **kwargs):
         event = args[1]
         context = args[2]
-        if ('body' in event and event['body'] != None):
+        if 'body' in event and event['body'] is not None:
             try:
                 event['body'] = json.loads(event['body'])
             except Exception as e:
-                info(message='Could not json.loads ' + str(event['body']))
-                event['body'] = {}
+                info(message=f"Could not json.loads {event['body']}")
+                # The BBR Proxy's iOS client sends urlencoded form bodies as well.
+                if 'content-type' in event and 'x-www-form-urlencoded' in event['content-type'].downcase:
+                    info(message=f"Trying parse_qs")
+                    event['body'] = parse_qs(event['body'])
+                else:
+                    event['body'] = {}
         try:
             principal_id = event['requestContext']['authorizer']['claims']['sub']
         except Exception as e:
