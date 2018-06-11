@@ -80,7 +80,13 @@ class LambdaProxyController():
                 # if 'content-type' in event and 'x-www-form-urlencoded' in event['content-type'].downcase:
                 info(message=f"Trying parse_qs")
                 query_params = parse_qs(event['body'])
+
+                for key in query_params:
+                    if isinstance(query_params[key], list) and len(query_params[key]) == 1:
+                        query_params[key] = query_params[key][0]
+
                 info(message=f"query_params: {query_params}")
+                event['body'] = query_params
 
         try:
             principal_id = event['requestContext']['authorizer']['claims']['sub']
