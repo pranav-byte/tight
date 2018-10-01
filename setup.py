@@ -19,22 +19,19 @@ from setuptools import setup, find_packages
 with open('README.rst') as readme_file:
     README = readme_file.read()
 
-
 install_requires = [
     'flywheel>=0.5.1',
     'PyYAML',
     'boto3'
 ]
 
-
 setup(
     name='tight',
     version='0.1.0',
     description="Microframework",
     long_description=README,
-    author="Michael McManus",
-    author_email='michaeltightmcmanus@gmail.com',
-    url='https://github.com/michaelorionmcmanus/tight',
+    author="lululemon athletica",
+    url='https://github.com/lululemon/tight',
     packages=find_packages(exclude=['tests']),
     install_requires=install_requires,
     license='MIT',

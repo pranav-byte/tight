@@ -31,3 +31,16 @@ Development
 
 * `pip install -e .`
 * `pip install -r requirements.txt`
+
+============
+Contributing
+============
+
+Please read `CONTRIBUTING.rst <./CONTRIBUTING.rst>`_ for details on our code of conduct, and the process for submitting pull requests.
+
+
+=======
+License
+=======
+
+This project is licensed under the Apache License, Version 2.0 - see the `LICENSE <./LICENSE>`_ file for details
