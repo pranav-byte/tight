@@ -12,8 +12,9 @@ This project adheres to `Semantic Versioning <http://semver.org/>`_.
 
 Added
 ~~~~~
-* CHANGELOG file starting with 0.1.1 unreleased version
-* CONTRIBUTING file containing open source contribution instructions and guidelines 
+* Added CHANGELOG file starting with 0.1.1 unreleased version
+* Added CONTRIBUTING file containing open source contribution instructions and guidelines
+* Added placebo tests back in
 
 Changed
 ~~~~~~~
