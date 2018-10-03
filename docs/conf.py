@@ -49,8 +49,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'tight'
-copyright = u'2016, Michael McManus'
-author = u'Michael McManus'
+copyright = u'2018, lululemon'
+author = u'lululemon athletica'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -132,7 +132,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'tight.tex', u'tight Documentation',
-     u'Michael McManus', 'manual'),
+     u'lululemon', 'manual'),
 ]
 
 
