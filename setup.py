@@ -22,12 +22,15 @@ with open('README.rst') as readme_file:
 install_requires = [
     'flywheel>=0.5.1',
     'PyYAML',
-    'boto3'
+    'boto3',
+    'placebo',
+    'botocore',
+    'pytest'
 ]
 
 setup(
     name='tight',
-    version='0.1.0',
+    version='0.1.1-dev',
     description="Microframework",
     long_description=README,
     author="lululemon athletica",
