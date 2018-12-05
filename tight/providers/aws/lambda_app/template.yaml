@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Simple API Endpoint configured using Swagger specified inline and backed by a Lambda function
+Resources:
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+        StageName: prod
+        DefinitionBody:
+            swagger: 2.0
+            info:
+              title:
+                Ref: AWS::StackName
+            paths:
+              "/alive":
+                get:
+                  x-amazon-apigateway-integration:
+                    httpMethod: POST
+                    type: aws_proxy
+                    uri:
+                      Fn::Sub: arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IsAliveFunction.Arn}/invocations
+                  responses: {}
+        
+  IsAliveFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+        FunctionName: "Is Alive Function"
+        Handler: app_index.is_alive_function
+        Runtime: python3.6
+        Environment:
+            Variables:
+                PARAM1: VALUE
+        Events:
+            is_alive_function:
+                Type: Api
+                Properties:
+                    Path: /alive
+                    Method: any
+
+Outputs:
+
+    ApiURL:
+      Description: "API endpoint URL for Prod environment"
+      Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/prod/get"
